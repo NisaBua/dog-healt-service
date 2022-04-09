@@ -38,6 +38,15 @@ route.get('/get_symptom', dog_health_care.getSymptom(), function (req, res) {
   res.status(200).json(response)
 })
 
+route.post('/update_symptom', dog_health_care.updateSymptom(), function (req, res) {
+  var response = res.data
+  res.status(200).json(response)
+})
+route.post('/update_disease', dog_health_care.updateDisease(), function (req, res) {
+  var response = res.data
+  res.status(200).json(response)
+})
+
 route.get(
   '/get_symptom_of_disease',
   dog_health_care.getSymptomOfDisease(),
@@ -55,14 +64,14 @@ route.post(
   }
 )
 
-route.get(
-  '/get_class_symptom',
-  dog_health_care.getClassSymptom(),
-  function (req, res) {
-    var response = res.data
-    res.status(200).json(response)
-  }
-)
+// route.get(
+//   '/get_class_symptom',
+//   dog_health_care.getClassSymptom(),
+//   function (req, res) {
+//     var response = res.data
+//     res.status(200).json(response)
+//   }
+// )
 
 route.get(
   '/get_first_node',

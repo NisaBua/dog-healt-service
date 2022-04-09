@@ -273,32 +273,29 @@ exports.getClassSymptom = (req, res, next) => {
 exports.getFirstNode = (req, res, next) => {
   return (req, res, next) => {
     var query =
-      'SELECT predict_disease_number,symptomNameTH,symptomNameEN from predict_disease left join symptom on symptom.symptomNumber = predict_disease.current_symptom where first_node = true'
+      'SELECT predict_disease_number,symptomNameTH,symptomNameEN,question_EN,question_TH from predict_disease left join symptom on symptom.symptomNumber = predict_disease.current_symptom where first_node = true'
     // console.log('req.body.diseaseNumber', req.query.diseaseNumber)
     try {
-      database.query(
-        query,
-        function (err, rows, fields) {
-          if (err) {
-            throw new Error(err)
-          }
-          if (rows.length > 0) {
-            res.data = {
-              success: true,
-              data: rows,
-              message: 'success !',
-            }
-            next()
-          } else {
-            res.data = {
-              success: false,
-              data: [],
-              message: 'no success !',
-            }
-            next()
-          }
+      database.query(query, function (err, rows, fields) {
+        if (err) {
+          throw new Error(err)
         }
-      )
+        if (rows.length > 0) {
+          res.data = {
+            success: true,
+            data: rows,
+            message: 'success !',
+          }
+          next()
+        } else {
+          res.data = {
+            success: false,
+            data: [],
+            message: 'no success !',
+          }
+          next()
+        }
+      })
     } catch (error) {
       return res
         .status(500)
@@ -306,18 +303,18 @@ exports.getFirstNode = (req, res, next) => {
     }
   }
 }
-
-exports.getPredict = (req, res, next) => {
+;(exports.getPredict = (req, res, next) => {
   return (req, res, next) => {
     var query =
-      'SELECT predict_disease_number,symptomNameTH,symptomNameEN,predict_disease_result from predict_disease left join symptom on symptom.symptomNumber = predict_disease.current_symptom where previous_symptom = ? and previous_status = ?'
+      'SELECT predict_disease_number,symptomNameTH,symptomNameEN,predict_disease_result,question_EN,question_TH from predict_disease left join symptom on symptom.symptomNumber = predict_disease.current_symptom where previous_symptom = ? and previous_status = ?'
     // console.log('req.body.diseaseNumber', req.query.diseaseNumber)
     try {
       database.query(
         query,
         [req.body.previous_symptom, req.body.previous_status],
         function (err, rows, fields) {
-          if (err) {ß
+          if (err) {
+            ß
             throw new Error(err)
           }
           if (rows.length > 0) {
@@ -343,41 +340,113 @@ exports.getPredict = (req, res, next) => {
         .json({ success: false, data: null, message: error.message })
     }
   }
-},
-exports.getPredictDisease = (req, res, next) => {
-  return (req, res, next) => {
-    var query =
-      'SELECT * from disease where diseaseNumber = ? '
-    // console.log('req.body.diseaseNumber', req.query.diseaseNumber)
-    try {
-      database.query(
-        query,
-        [req.body.disease_number],
-        function (err, rows, fields) {
-          if (err) {ß
-            throw new Error(err)
+}),
+  (exports.getPredictDisease = (req, res, next) => {
+    return (req, res, next) => {
+      var query = 'SELECT * from disease where diseaseNumber = ? '
+      // console.log('req.body.diseaseNumber', req.query.diseaseNumber)
+      try {
+        database.query(
+          query,
+          [req.body.disease_number],
+          function (err, rows, fields) {
+            if (err) {
+              ß
+              throw new Error(err)
+            }
+            if (rows.length > 0) {
+              res.data = {
+                success: true,
+                data: rows,
+                message: 'success !',
+              }
+              next()
+            } else {
+              res.data = {
+                success: false,
+                data: [],
+                message: 'no success !',
+              }
+              next()
+            }
           }
-          if (rows.length > 0) {
+        )
+      } catch (error) {
+        return res
+          .status(500)
+          .json({ success: false, data: null, message: error.message })
+      }
+    }
+  }),
+  (exports.updateSymptom = (req, res, next) => {
+    return (req, res, next) => {
+      var insertDisease =
+        'UPDATE symptom SET question_TH = ? , question_EN =  ? , symptomNameEN = ? , symptomNameTH = ? WHERE symptomNumber = ?'
+      try {
+        database.query(
+          insertDisease,
+          [
+            req.body.question_TH,
+            req.body.question_EN,
+            req.body.symptomNameEN,
+            req.body.symptomNameTH,
+            req.body.symptomNumber,
+          ],
+          function (err, rows, fields) {
+            if (err) {
+              // res.status(200).json({ success: false, data: null, message: err });
+              throw new Error(err)
+            }
             res.data = {
               success: true,
               data: rows,
-              message: 'success !',
-            }
-            next()
-          } else {
-            res.data = {
-              success: false,
-              data: [],
-              message: 'no success !',
+              message: 'อัพเดทข้อมูลสำเร็จ !',
             }
             next()
           }
-        }
-      )
-    } catch (error) {
-      return res
-        .status(500)
-        .json({ success: false, data: null, message: error.message })
+        )
+      } catch (error) {
+        throw new Error(err)
+        return res
+          .status(200)
+          .json({ success: false, data: null, message: error.message })
+      }
     }
-  }
-}
+  }),
+  (exports.updateDisease = (req, res, next) => {
+    return (req, res, next) => {
+      var insertDisease =
+        'UPDATE disease SET diseaseEN = ? , diseaseTH =  ? , treatmentGuidelinesEN = ? , treatmentGuidelinesTH = ?, symptomDetailEN = ?,symptomDetailTH = ? WHERE diseaseNumber = ?'
+      try {
+        database.query(
+          insertDisease,
+          [
+            req.body.diseaseEN,
+            req.body.diseaseTH,
+            req.body.treatmentGuidelinesEN,
+            req.body.treatmentGuidelinesTH,
+            req.body.symptomDetailEN,
+            req.body.symptomDetailTH,
+            req.body.diseaseNumber,
+          ],
+          function (err, rows, fields) {
+            if (err) {
+              // res.status(200).json({ success: false, data: null, message: err });
+              throw new Error(err)
+            }
+            res.data = {
+              success: true,
+              data: rows,
+              message: 'อัพเดทข้อมูลสำเร็จ !',
+            }
+            next()
+          }
+        )
+      } catch (error) {
+        throw new Error(err)
+        return res
+          .status(200)
+          .json({ success: false, data: null, message: error.message })
+      }
+    }
+  })
