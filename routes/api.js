@@ -18,10 +18,16 @@ route.post('/login', user.login(), function (req, res) {
   res.status(200).json(response)
 })
 
-route.post('/gen_password', user.genPassword(), function (req, res) {
+route.post('/set_password', user.setPassword(), function (req, res) {
   var response = res.data
   res.status(200).json(response)
 })
+
+route.post('/request_reset_password', user.requestResetPassword(), function (req, res) {
+  var response = res.data
+  res.status(200).json(response)
+})
+
 
 route.get(
   '/get_profile',
@@ -64,15 +70,6 @@ route.post(
   }
 )
 
-// route.get(
-//   '/get_class_symptom',
-//   dog_health_care.getClassSymptom(),
-//   function (req, res) {
-//     var response = res.data
-//     res.status(200).json(response)
-//   }
-// )
-
 route.get(
   '/get_first_node',
   dog_health_care.getFirstNode(),
@@ -95,13 +92,3 @@ route.post(
     res.status(200).json(response)
   }
 )
-
-// route.post(
-//   '/predict_disease',
-//   training_data.training_data(),
-//   dog_health_care.predictDisease(),
-//   function (req, res) {
-//     var response = res.data
-//     res.status(200).json(response)
-//   }
-// )

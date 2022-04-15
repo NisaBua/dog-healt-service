@@ -69,23 +69,70 @@ exports.login = (req, res, next) => {
   }
 }
 
-exports.genPassword = (req, res, next) => {
+exports.setPassword = (req, res, next) => {
   return async (req, res, next) => {
     const hash = await bcrypt.hashSync(req.body.password, saltRounds)
-    if (hash) {
-      res.data = {
-        success: true,
-        data: [hash],
-        message: 'success !',
-      }
-      next()
-    } else {
-      res.data = {
-        success: false,
-        data: null,
-        message: 'no success !',
-      }
-      next()
+    var insertDisease =
+    'UPDATE user SET password = ? where username = ?'
+    try {
+      database.query(
+        insertDisease,
+        [hash ,req.body.username],
+        function (err, rows, fields) {
+          if (err) {
+            // res.status(200).json({ success: false, data: null, message: err });
+            throw new Error(err)
+          }
+          res.data = {
+            success: true,
+            data: 'success',
+            message: 'เปลี่ยนรหัสผ่านสำเร็จ !',
+          }
+          next()
+        }
+      )
+    } catch (error) {
+      return res
+        .status(200)
+        .json({ success: false, data: null, message: error.message })
+    }
+
+  }
+}
+
+exports.requestResetPassword = (req, res, next) => {
+  return (req, res, next) => {
+    var query =
+      'SELECT username,nameTitle,firstName,lastName from user where username = ? and birthDate = ?'
+    try {
+      database.query(
+        query,
+        [req.body.username,req.body.birthDate],
+        function (err, rows, fields) {
+          if (err) {
+            throw new Error(err)
+          }
+          if (rows.length > 0) {
+            res.data = {
+              success: true,
+              data: rows[0],
+              message: 'success !',
+            }
+            next()
+          } else {
+            res.data = {
+              success: false,
+              data: [],
+              message: 'ไม่พบผู้ใช้งาน หรือ กรอกข้อมูลไม่ถูกต้อง !',
+            }
+            next()
+          }
+        }
+      )
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ success: false, data: null, message: error.message })
     }
   }
 }
