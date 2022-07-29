@@ -12,15 +12,11 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.get('/', (req, res) => {
-  res.send('dogs healt care')
+    res.send('dogs healt care')
 })
 
 app.use('/api', api)
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`)
+    console.log(`Server is running on port ${PORT}.`)
 })
-
-// app.listen(3000, () => {
-//   console.log('Start server at port 3000.')
-// })
