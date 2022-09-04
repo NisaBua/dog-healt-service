@@ -4,8 +4,6 @@ const dog_health_care = require('../controllers/dog_health_care')
 const user = require('../controllers/user')
 const auth = require('../auth/auth')
 
-const training_data = require('../models/training_data')
-
 module.exports = route
 
 route.get('/get_disease', dog_health_care.getDisease(), function(req, res) {
@@ -95,13 +93,3 @@ route.post(
         res.status(200).json(response)
     }
 )
-
-// route.post(
-//   '/predict_disease',
-//   training_data.training_data(),
-//   dog_health_care.predictDisease(),
-//   function (req, res) {
-//     var response = res.data
-//     res.status(200).json(response)
-//   }
-// )
