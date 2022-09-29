@@ -126,3 +126,59 @@ exports.getProfile = (req, res, next) => {
         }
     };
 };
+exports.addAdmin = (req, res, next) => {
+    return async(req, res, next) => {
+        var insertDisease =
+            "INSERT INTO `user`(`username`, `password`, `nameTitle`, `firstName`, `lastName`, `birthDate`) VALUES (?,?,?,?,?,?)";
+        var query =
+            "SELECT nameTitle,firstName,lastName from user where username = ?";
+        try {
+            const hash = await bcrypt.hashSync(req.body.data.password, saltRounds);
+            database.query(
+                query, [req.body.data.username],
+                function(err, rows, fields) {
+                    if (err) {
+                        ß;
+                        throw new Error(err);
+                    }
+                    if (rows.length > 0) {
+                        res.data = {
+                            success: false,
+                            data: [],
+                            message: "already exists username !",
+                        };
+                        next();
+                    } else {
+                        database.query(
+                            insertDisease, [
+                                req.body.data.username,
+                                hash,
+                                req.body.data.nameTitle,
+                                req.body.data.firstName,
+                                req.body.data.lastName,
+                                req.body.data.birthDate,
+                            ],
+                            function(err, rows, fields) {
+                                if (err) {
+                                    // res.status(200).json({ success: false, data: null, message: err });
+                                    throw new Error(err);
+                                }
+                                res.data = {
+                                    success: true,
+                                    data: rows,
+                                    message: "เพิ่มข้อมูลสำเร็จ !",
+                                };
+                                next();
+                            }
+                        );
+                    }
+                }
+            );
+        } catch (error) {
+            throw new Error(err);
+            return res
+                .status(200)
+                .json({ success: false, data: null, message: error.message });
+        }
+    };
+};
