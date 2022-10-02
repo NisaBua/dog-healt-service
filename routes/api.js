@@ -119,3 +119,7 @@ route.post(
         res.status(200).json(response);
     }
 );
+route.post("/set_password", user.setPassword(), function(req, res) {
+    var response = res.data;
+    res.status(200).json(response);
+});

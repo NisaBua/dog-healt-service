@@ -217,3 +217,30 @@ exports.requestResetPassword = (req, res, next) => {
         }
     };
 };
+exports.setPassword = (req, res, next) => {
+    return async(req, res, next) => {
+        const hash = await bcrypt.hashSync(req.body.password, saltRounds);
+        var insertDisease = "UPDATE user SET password = ? where username = ?";
+        try {
+            database.query(
+                insertDisease, [hash, req.body.username],
+                function(err, rows, fields) {
+                    if (err) {
+                        // res.status(200).json({ success: false, data: null, message: err });
+                        throw new Error(err);
+                    }
+                    res.data = {
+                        success: true,
+                        data: "success",
+                        message: "เปลี่ยนรหัสผ่านสำเร็จ !",
+                    };
+                    next();
+                }
+            );
+        } catch (error) {
+            return res
+                .status(200)
+                .json({ success: false, data: null, message: error.message });
+        }
+    };
+};
