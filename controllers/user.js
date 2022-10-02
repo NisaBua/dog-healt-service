@@ -182,3 +182,38 @@ exports.addAdmin = (req, res, next) => {
         }
     };
 };
+exports.requestResetPassword = (req, res, next) => {
+    return (req, res, next) => {
+        var query =
+            "SELECT username,nameTitle,firstName,lastName from user where username = ? and birthDate = ?";
+        try {
+            database.query(
+                query, [req.body.username, req.body.birthDate],
+                function(err, rows, fields) {
+                    if (err) {
+                        throw new Error(err);
+                    }
+                    if (rows.length > 0) {
+                        res.data = {
+                            success: true,
+                            data: rows[0],
+                            message: "success !",
+                        };
+                        next();
+                    } else {
+                        res.data = {
+                            success: false,
+                            data: [],
+                            message: "ไม่พบผู้ใช้งาน หรือ กรอกข้อมูลไม่ถูกต้อง !",
+                        };
+                        next();
+                    }
+                }
+            );
+        } catch (error) {
+            return res
+                .status(500)
+                .json({ success: false, data: null, message: error.message });
+        }
+    };
+};

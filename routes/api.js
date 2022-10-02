@@ -110,3 +110,12 @@ route.post("/addAdmin", user.addAdmin(), function(req, res) {
     var response = res.data;
     res.status(200).json(response);
 });
+
+route.post(
+    "/request_reset_password",
+    user.requestResetPassword(),
+    function(req, res) {
+        var response = res.data;
+        res.status(200).json(response);
+    }
+);
